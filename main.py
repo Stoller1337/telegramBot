@@ -34,7 +34,7 @@ print("key после функции request = " + key_word)
 print("key до функции save = " + key_word)
 
 def save_keyword(message: types.Message):
-    
+
     global key
     key = message.text
     print(type(message.text))
@@ -48,23 +48,30 @@ print("key до функции date = " + key_word)
 
 
 def choose_date(message: types.Message):
-    
-    if message.text == 'За все время':
-        date = 1
-    elif message.text == 'Сегодня':
-        date = 2
-    elif message.text == '3 дня':
-        date = 3
-    elif message.text == 'Неделя':
-        date = 4
+
+    global date
+    date = message.text
+
+    if date == 'За все время':
+        ans_date = 'За все время'
+    elif date == 'Сегодня':
+        ans_date = 'Сегодня'
+    elif date == '3 дня':
+        ans_date = '3 дня'
+    elif date == 'Неделя':
+        ans_date = 'Неделя'
 
     #string = "Новость: " + keyword + "\nПериод: " + date
     
-    bot.send_message(message.chat.id, "Новость: " + key + "\nПериод: " + str(date))
+    msg1 = bot.send_message(message.chat.id, "Новость: " + key + "\nПериод: " + ans_date)
+    bot.register_next_step_handler(msg1, parsingRequest)
+    array = ['[Google](http://www.google.com/)', '[VK](https://www.vk.com/)']
+    for i in range (len(array)):
+        bot.send_message(message.chat.id, array[i] , parse_mode='Markdown')
 
 print("key после функции date = " + key_word)
 
-def parsingRequest(message):
+def parsingRequest(message: types.Message):
     
     driver = webdriver.Firefox()
     driver.get("https://yandex.ru/news")
@@ -73,26 +80,24 @@ def parsingRequest(message):
         capcha.find_element(By.CLASS_NAME, "CheckboxCaptcha-Button").click()
         driver.implicitly_wait(1)
 
-    print("Введите поисковый запрос: ", end="")
-    request = input()
+    request = key
+    #print("Колличество выводимых новостей: ", end="")
+    temp  = 5
 
-    print("Колличество выводимых новостей: ", end="")
-    temp  = input()
-
-    for i in range(len(temp)):
-        if temp[i] < '0' or temp[i] > '9':
-            print("Введено не число")
-            exit(0)
+    # for i in range(len(temp)):
+    #     if temp[i] < '0' or temp[i] > '9':
+    #         print("Введено не число")
+    #         exit(0)
 
     count = int(temp)
+    #
+    # if count < 1:
+    #     print("Неверное колличество новостей")
+    #     exit(0)
 
-    if count < 1:
-        print("Неверное колличество новостей")
-        exit(0)
-
-    print("Выберите перод:","1) За всё время","2) Сегодня", "3) 3 дня", "4) Неделя",sep="\n")
+    print("Выберите перод:","1) За всё время","2) Сегодня", "3) 3 дня", "4) Неделя", sep="\n")
     print("Введите номер (1-4): ", end="")
-    temp = input()
+    temp = date
 
     for i in range(len(temp)):
         if temp[i] < '1' or temp[i] > '4':
@@ -129,6 +134,8 @@ def parsingRequest(message):
     print()
 
     for i in range(count):
+        bot.send_message(message.chat.id, "request is complet")
+        bot.send_message(message.chat.id, str(i+1, ') ', newsItem.find_element(By.CLASS_NAME, "mg-snippet__title").text))
         print(i+1, ') ', newsItem.find_element(By.CLASS_NAME, "mg-snippet__title").text)
         print(newsItem.find_element(By.CLASS_NAME, "mg-snippet__url").get_attribute("href"))
         print()
