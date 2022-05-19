@@ -1,9 +1,10 @@
 from telebot.types import KeyboardButton, ReplyKeyboardMarkup
 
+city = KeyboardButton("Выбрать город")
 request = KeyboardButton("Новый запрос")
 openFile = KeyboardButton("Запрос из файла")
 
-mainMenu = ReplyKeyboardMarkup(resize_keyboard=True).add(request, openFile)
+mainMenu = ReplyKeyboardMarkup(resize_keyboard=True).add(city, request, openFile)
 
 #openFileKeybord = ReplyKeyboardMarkup(resize_keyboard=True).add(openFile)
 

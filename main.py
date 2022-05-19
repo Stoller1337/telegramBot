@@ -1,8 +1,10 @@
 import string
+import time
 from telnetlib import EC
 
 import emoji
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 import telebot
 from selenium.webdriver.support.wait import WebDriverWait
@@ -20,6 +22,10 @@ count = 5
 download_file = None
 flag = True
 src = ''
+choosePeriod = None
+city = 'Санкт-Петербург'
+driver = webdriver.Firefox()
+bt.mainMenu
 @bot.message_handler(commands=['start'])
 def start(message: types.Message):
      bot.send_message(message.chat.id, "Привет! Я бот Яндекс-Новости.\n\n"
@@ -28,16 +34,61 @@ def start(message: types.Message):
                       reply_markup=bt.mainMenu)
 
 
-
 @bot.message_handler(content_types=['text'])
 def request(message):
 
-    if message.text == 'Новый запрос':
+    if message.text == 'Выбрать город':
+        msg = bot.send_message(message.chat.id, 'Введите город для поиска новостей: ')
+        bot.register_next_step_handler(msg, choose_city)
+        time.sleep(1)
+    elif message.text == 'Новый запрос':
         msg = bot.send_message(message.chat.id, 'Введите ключевое слово: ')
         bot.register_next_step_handler(msg, save_keyword)
     elif message.text == 'Запрос из файла':
         msg = bot.send_message(message.chat.id, 'Пожалуйста отправьте мне файл с расширением .txt')
         bot.register_next_step_handler(msg, save_keyword)
+
+
+def choose_city(message):
+    global city
+    global driver
+    city = message.text
+    bot.send_message(message.chat.id, "Ищу город...")
+
+    driver.get("https://yandex.ru/tune/geo")
+    driver.implicitly_wait(1)
+    try:
+        check_box = driver.find_element(By.CLASS_NAME, "checkbox__control")
+        check_box.click()
+
+    except NoSuchElementException:
+        print("Переход на страницу геолокации не был выполнен")
+        #driver.quit()
+        #exit(1)
+
+    region_box = driver.find_element(By.CLASS_NAME, "input__control")
+    region_box.send_keys(city)
+
+    driver.implicitly_wait(3)
+
+    try:
+        popup_window = driver.find_element(By.CLASS_NAME, "b-autocomplete-item")
+        print("Выбранный вами город:         ", driver.find_element(By.CLASS_NAME, "b-autocomplete-item__reg").text)
+        popup_window.click()
+    except NoSuchElementException:
+        msg = bot.send_message(message.chat.id, "Неверное название города")
+        bot.register_next_step_handler(msg, choose_city)
+        #driver.quit()
+        #exit(1)
+
+    # Сохранение нового города
+    save_button = driver.find_elements(By.CLASS_NAME, "button")[1]
+    save_button.click()
+
+    time.sleep(1)
+
+    msg = bot.send_message(message.chat.id, 'Отлично, настройки сохранены!', reply_markup=bt.mainMenu)
+    bot.register_next_step_handler(msg, request)
 
 
 # @bot.message_handler(content_types=['document'])
@@ -109,6 +160,9 @@ def choose_date_file(message):
 
     global date
     global date_num
+    global array
+    global choosePeriod
+    global driver
     date = message.text
 
     match date:
@@ -134,15 +188,16 @@ def choose_date_file(message):
         bot.register_next_step_handler(msg1, choose_date)
 
     else:
+        print('PERIOD = ', date_num)
         choosePeriod = date_num
 
         msg1 = bot.send_message(message.chat.id,
-                                "Новость: " + str(array) + "\nПериод: " + ans_date + "\nКоличество новостей: " + str(
+                                "Город: " + city + "\nНовость: " + str(array) + "\nПериод: " + ans_date + "\nКоличество новостей: " + str(
                                     count))
         # bot.register_next_step_handler(msg1, parsingRequest)
         bot.send_message(message.chat.id, 'Обрабатываю запрос...Пожалуйста подождите ' + '⏳')
 
-        driver = webdriver.Firefox()
+        #driver = webdriver.Firefox()
         driver.get("https://yandex.ru/news")
         driver.implicitly_wait(1)
 
@@ -151,10 +206,13 @@ def choose_date_file(message):
             capcha.find_element(By.CLASS_NAME, "CheckboxCaptcha-Button").click()
             driver.implicitly_wait(1)
 
-        for key in range(2):
-            
-            req = array[key]
+        file_write = open('ans.txt', 'w')
+
+        for i in range(len(array)):
+
+            req = array[i]
             print('[*] REQUEST = ', req)
+            print('[*] TYPE = ', type(req))
             # temp = 5
             # count = int(temp)
 
@@ -163,6 +221,7 @@ def choose_date_file(message):
 
             text_box.clear()
             text_box.send_keys(req)
+            #print('TEXT_BOX_SEND_KEYS = ', text_box.send_keys(req))
             find_button.click()
 
             driver.implicitly_wait(3)
@@ -181,7 +240,7 @@ def choose_date_file(message):
                                  reply_markup=bt.mainMenu)
                 msg = bot.send_message(message.chat.id, "Введите ключевое слово: ", reply_markup=bt.mainMenu)
                 bot.register_next_step_handler(msg, save_keyword)
-                driver.quit()
+                #driver.quit()
                 continue
 
             count2 = count
@@ -189,37 +248,35 @@ def choose_date_file(message):
             if len(news) < count2:
                 count2 = len(news)
 
-            else:
+            dictOfNews = {}
 
-                dictOfNews = {}
+            for k in range(count2):
+                someNews = news.pop(0)
+                dictOfNews[someNews.find_element(By.CLASS_NAME, "mg-snippet__title").text] = someNews.find_element(
+                    By.CLASS_NAME, "mg-snippet__url").get_attribute("href")
 
-                for i in range(count2):
-                    someNews = news.pop(0)
-                    dictOfNews[someNews.find_element(By.CLASS_NAME, "mg-snippet__title").text] = someNews.find_element(
-                        By.CLASS_NAME, "mg-snippet__url").get_attribute("href")
+            dictOfNews2 = []
+            slovo = ''
+            num = 1
+            for Name, Link in dictOfNews.items():
+                word = str(num) + ') ' + '[' + Name + ']' + '(' + Link + ')' + '\n' + ''
+                dictOfNews2.append(word)
+                slovo += word
+                num += 1
 
-                dictOfNews2 = []
-                slovo = ''
-                global num
-                num = 1
-                for Name, Link in dictOfNews.items():
-                    word = str(num) + ') ' + '[' + Name + ']' + '(' + Link + ')' + '\n' + ''
-                    dictOfNews2.append(word)
-                    slovo += word
-                    num += 1
+            print('[*] iter = ', i)
+            print('slovo = ', slovo)
 
+            file_write.write('[*] REQUEST = ' + array[i] + '\n')
+            file_write.write(slovo)
+            file_write.write('\n')
+            for j in range(len(dictOfNews2)):
+                print('dict = ', dictOfNews2[j], '\n')
+                # file_write = open('ans.txt', 'w')
+                # file_write.write(dictOfNews2[i])
 
-                print('slovo = ', slovo)
-                file_write = open('ans.txt', 'w')
-                file_write.write('[*] REQUEST = ' + array[key] + '\n')
-                file_write.write(slovo)
-                for i in range(len(dictOfNews2)):
-                    print('dict = ', dictOfNews2[i], '\n')
-                    # file_write = open('ans.txt', 'w')
-                    # file_write.write(dictOfNews2[i])
-
-                bot.send_message(message.chat.id, slovo, parse_mode='Markdown', reply_markup=bt.mainMenu)
-
+            bot.send_message(message.chat.id, slovo, parse_mode='Markdown', reply_markup=bt.mainMenu)
+            time.sleep(1)
 
 def choose_date(message: types.Message):
 
@@ -252,10 +309,10 @@ def choose_date(message: types.Message):
     else:
         choosePeriod = date_num
 
-        msg1 = bot.send_message(message.chat.id, "Новость: " + str(key) + "\nПериод: " + ans_date + "\nКоличество новостей: " + str(count))
+        msg1 = bot.send_message(message.chat.id, "Город: " + city + "\nНовость: " + str(key) + "\nПериод: " + ans_date + "\nКоличество новостей: " + str(count))
         #bot.register_next_step_handler(msg1, parsingRequest)
         bot.send_message(message.chat.id, 'Обрабатываю запрос...Пожалуйста подождите ' + '⏳')
-        driver = webdriver.Firefox()
+        #driver = webdriver.Firefox()
         driver.get("https://yandex.ru/news")
 
         if driver.title == 'Ой!':
@@ -286,7 +343,7 @@ def choose_date(message: types.Message):
             bot.send_message(message.chat.id, "Новостей по такому запросу не найдено\nПопробуйте еще раз", reply_markup=bt.mainMenu)
             msg = bot.send_message(message.chat.id, "Введите ключевое слово: ", reply_markup=bt.mainMenu)
             bot.register_next_step_handler(msg, save_keyword)
-            driver.quit()
+            #driver.quit()
 
         count2 = count
 
