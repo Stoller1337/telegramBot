@@ -1,15 +1,14 @@
-import string
-import time
-from telnetlib import EC
-
-import emoji
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.by import By
+#######################
+#       Authors:      #
+#     Rulev Gregory   #
+#    Maksim Zhokhov   #
+#######################
+from selenium                      import webdriver
+from selenium.common.exceptions    import NoSuchElementException
+from selenium.webdriver.common.by  import By
+from telebot                       import types
 import telebot
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from telebot import types
+import time
 import buttons as bt
 
 token = "5299924776:AAFA0SR5YSrGCX1NDx_r3dSWWz4yBCoUNdA"
@@ -63,8 +62,6 @@ def choose_city(message):
 
     except NoSuchElementException:
         print("Переход на страницу геолокации не был выполнен")
-        #driver.quit()
-        #exit(1)
 
     region_box = driver.find_element(By.CLASS_NAME, "input__control")
     region_box.send_keys(city)
@@ -78,8 +75,6 @@ def choose_city(message):
     except NoSuchElementException:
         msg = bot.send_message(message.chat.id, "Неверное название города")
         bot.register_next_step_handler(msg, choose_city)
-        #driver.quit()
-        #exit(1)
 
     # Сохранение нового города
     save_button = driver.find_elements(By.CLASS_NAME, "button")[1]
@@ -91,27 +86,6 @@ def choose_city(message):
     bot.register_next_step_handler(msg, request)
 
 
-# @bot.message_handler(content_types=['document'])
-# def request_from_file(message):
-#     # global key
-#     # key = ''
-#     fileFrom = bot.get_file(message.document.file_id)
-#     print('------')
-#     print('name = ', message.document.file_name)
-#     fileOpen = open(fileFrom, 'r', encoding='utf8')
-#     print('------')
-#     key = fileOpen.readline()
-#     print('key = ', key)
-# #     fileFrom = bot.get_file(message.document.file_id)
-# #     download_file = bot.download_file(fileFrom.file_path)
-# #     src = 'D:/BPA/files/' + message.document.file_name
-# #     with open(src, 'rb', encoding='utf8') as file:
-# # #        file = open(src, "rb", "utf_8_sig")
-# #         key = file.readline()
-#     msg = bot.send_message(message.chat.id, 'Открываю файл...Пожалуйста подождите')
-#     bot.register_next_step_handler(msg, save_keyword)
-#
-
 @bot.message_handler(content_types=['document'])
 def save_keyword(message):
     global key
@@ -121,8 +95,12 @@ def save_keyword(message):
     if message.document:
         flag = True
         fileFrom = bot.get_file(message.document.file_id)
+        print('file path = ',fileFrom.file_path)
         download_file = bot.download_file(fileFrom.file_path)
         src = 'D:/BPA/files/' + message.document.file_name
+        with open(src, 'wb') as file:
+            file.write(download_file)
+
         with open(src, 'r', encoding='utf8') as file:
             array = [row.strip() for row in file]
             print('key = ', array)
@@ -194,10 +172,10 @@ def choose_date_file(message):
         msg1 = bot.send_message(message.chat.id,
                                 "Город: " + city + "\nНовость: " + str(array) + "\nПериод: " + ans_date + "\nКоличество новостей: " + str(
                                     count))
-        # bot.register_next_step_handler(msg1, parsingRequest)
-        bot.send_message(message.chat.id, 'Обрабатываю запрос...Пожалуйста подождите ' + '⏳')
 
-        #driver = webdriver.Firefox()
+        bot.send_message(message.chat.id, 'Обрабатываю запрос...Пожалуйста подождите ' + '⏳', reply_markup=bt.mainMenu)
+
+
         driver.get("https://yandex.ru/news")
         driver.implicitly_wait(1)
 
@@ -213,24 +191,24 @@ def choose_date_file(message):
             req = array[i]
             print('[*] REQUEST = ', req)
             print('[*] TYPE = ', type(req))
-            # temp = 5
-            # count = int(temp)
+
 
             text_box = driver.find_element(By.CLASS_NAME, "input__control")
             find_button = driver.find_element(By.CLASS_NAME, "websearch-button")
 
             text_box.clear()
             text_box.send_keys(req)
-            #print('TEXT_BOX_SEND_KEYS = ', text_box.send_keys(req))
             find_button.click()
-
             driver.implicitly_wait(3)
 
             if choosePeriod > 1:
+                time.sleep(1)
                 periods = driver.find_elements(By.CLASS_NAME, "Radiobox-Control")
                 period = periods[choosePeriod - 1]
                 period.click()
-                #WebDriverWait(driver, timeout=100).until(EC.element_to_be_clickable(period)).click()
+                text_box = driver.find_element(By.CLASS_NAME, "input__control")
+                text_box.clear()
+
 
             #Получение списка нвоостей
             news = driver.find_elements(By.CLASS_NAME, "news-search-story")
@@ -272,11 +250,13 @@ def choose_date_file(message):
             file_write.write('\n')
             for j in range(len(dictOfNews2)):
                 print('dict = ', dictOfNews2[j], '\n')
-                # file_write = open('ans.txt', 'w')
-                # file_write.write(dictOfNews2[i])
 
             bot.send_message(message.chat.id, slovo, parse_mode='Markdown', reply_markup=bt.mainMenu)
             time.sleep(1)
+        file_write.close()
+        file = open('ans.txt', 'rb')
+        bot.send_message(message.chat.id, 'Твой файл готов: ')
+        bot.send_document(message.chat.id, file)
 
 def choose_date(message: types.Message):
 
@@ -310,9 +290,7 @@ def choose_date(message: types.Message):
         choosePeriod = date_num
 
         msg1 = bot.send_message(message.chat.id, "Город: " + city + "\nНовость: " + str(key) + "\nПериод: " + ans_date + "\nКоличество новостей: " + str(count))
-        #bot.register_next_step_handler(msg1, parsingRequest)
         bot.send_message(message.chat.id, 'Обрабатываю запрос...Пожалуйста подождите ' + '⏳')
-        #driver = webdriver.Firefox()
         driver.get("https://yandex.ru/news")
 
         if driver.title == 'Ой!':
@@ -321,8 +299,6 @@ def choose_date(message: types.Message):
             driver.implicitly_wait(1)
 
         request = key
-        # temp = 5
-        # count = int(temp)
 
         text_box = driver.find_element(By.CLASS_NAME, "input__control")
         find_button = driver.find_element(By.CLASS_NAME, "websearch-button")
@@ -343,7 +319,6 @@ def choose_date(message: types.Message):
             bot.send_message(message.chat.id, "Новостей по такому запросу не найдено\nПопробуйте еще раз", reply_markup=bt.mainMenu)
             msg = bot.send_message(message.chat.id, "Введите ключевое слово: ", reply_markup=bt.mainMenu)
             bot.register_next_step_handler(msg, save_keyword)
-            #driver.quit()
 
         count2 = count
 
@@ -372,9 +347,6 @@ def choose_date(message: types.Message):
             print(slovo)
             for i in range(len(dictOfNews2)):
                 print(dictOfNews2[i], '\n')
-
-            # for i in range(len(dictOfNews2)):
-            #     bot.send_message(message.chat.id, dictOfNews2[i], parse_mode='Markdown', reply_markup=bt.mainMenu)
 
             bot.send_message(message.chat.id, slovo, parse_mode='Markdown', reply_markup=bt.mainMenu)
 bot.polling()

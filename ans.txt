@@ -1,0 +1,16 @@
+[*] REQUEST = трамвай
+1) [Барнаульский водитель решительно перекрыл трамвайное движение](https://altapress.ru/proisshestvija/story/barnaulskiy-voditel-reshitelno-perekril-tramvaynoe-dvizhenie-305578?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+2) [Современные трамваи в ретростиле появятся в Петербурге](https://iz.ru/1336341/2022-05-18/sovremennye-tramvai-v-retrostile-poiaviatsia-v-peterburge?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+3) [Трамвайные маршруты на месяц поменяют в Магнитогорске](https://chel.aif.ru/society/ptransport/tramvaynye_marshruty_na_mesyac_pomenyayut_v_magnitogorske?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+4) [В Екатеринбурге трамвай разнес иномарку, которая встала на его пути](https://ekb.tsargrad.tv/news/v-ekaterinburge-tramvaj-raznes-inomarku-kotoraja-vstala-na-ego-puti_550033?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+5) [В Краснодаре легковушка вылетела на трамвайные пути на Московской](https://kuban24.tv/item/v-krasnodare-legkovushka-vyletela-na-tramvajnye-puti-na-moskovskoj?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+6) [В Челябинске трамвай № 7 вернули на прежний маршрут](https://www.up74.ru/articles/news/140458/?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+
+[*] REQUEST = транспортная инфраструктура
+1) [Барнаульский водитель решительно перекрыл трамвайное движение](https://altapress.ru/proisshestvija/story/barnaulskiy-voditel-reshitelno-perekril-tramvaynoe-dvizhenie-305578?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+2) [Современные трамваи в ретростиле появятся в Петербурге](https://iz.ru/1336341/2022-05-18/sovremennye-tramvai-v-retrostile-poiaviatsia-v-peterburge?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+3) [Трамвайные маршруты на месяц поменяют в Магнитогорске](https://chel.aif.ru/society/ptransport/tramvaynye_marshruty_na_mesyac_pomenyayut_v_magnitogorske?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+4) [В Екатеринбурге трамвай разнес иномарку, которая встала на его пути](https://ekb.tsargrad.tv/news/v-ekaterinburge-tramvaj-raznes-inomarku-kotoraja-vstala-na-ego-puti_550033?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+5) [В Краснодаре легковушка вылетела на трамвайные пути на Московской](https://kuban24.tv/item/v-krasnodare-legkovushka-vyletela-na-tramvajnye-puti-na-moskovskoj?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+6) [В Челябинске трамвай № 7 вернули на прежний маршрут](https://www.up74.ru/articles/news/140458/?utm_source=yxnews&utm_medium=desktop&utm_referrer=https%3A%2F%2Fyandex.ru%2Fnews%2Fsearch%3Ftext%3D)
+
